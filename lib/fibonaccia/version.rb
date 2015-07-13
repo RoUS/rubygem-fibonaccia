@@ -21,6 +21,18 @@ require('versionomy')
 module Fibonaccia
 
   #
+  # Minimum version of Ruby we support.
+  #
+  MINIMUM_RUBY_VERSION	= Versionomy.parse('1.9.3')
+  #
+  # Enforce our minimum requirement.
+  #
+  if (Versionomy.ruby_version < MINIMUM_RUBY_VERSION)
+    raise RuntimeError.new("minimum Ruby version required is #{MINIMUM_RUBY_VERSION.to_s}, " +
+                           "running #{Versionomy.ruby_version.to_s}")
+  end
+
+  #
   # Initial starting point.
   #
   @version		= Versionomy.parse('0.0.1')

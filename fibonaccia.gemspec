@@ -23,6 +23,7 @@ Proc.new {
 require('fibonaccia/version')
 
 Gem::Specification.new do |s|
+  s.required_ruby_version = ">= #{Fibonaccia::MINIMUM_RUBY_VERSION.to_s}"
   if (s.respond_to?(:required_rubygems_version=))
     s.required_rubygems_version = Gem::Requirement.new('>= 0')
   end

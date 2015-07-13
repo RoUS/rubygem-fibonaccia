@@ -16,13 +16,14 @@ group(:default, :development, :test) do
   #   if :platform >= :mri_20  # (pseudocode)
   # and not have to maintain explicit versions moving forward.
   #
-  platforms(:mri_18) do
-    gem('ruby-debug',	'>= 0')
-  end
-  platforms(:mri_19) do
-    gem('debugger',	'>= 0')
-  end
-  platforms(:mri_20, :mri_21) do
+  if (RUBY_VERSION < '2.0.0')
+    platforms(:mri_18) do
+      gem('ruby-debug',	'>= 0')
+    end
+    platforms(:mri_19) do
+      gem('debugger',	'>= 0')
+    end
+  else
     gem('byebug',	'>= 0')
   end
 
