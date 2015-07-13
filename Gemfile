@@ -1,4 +1,43 @@
-source 'https://rubygems.org'
+source('https://rubygems.org/')
 
-# Specify your gem's dependencies in fibonaccia.gemspec
-gemspec
+#
+# All the dependencies *were* in fibonaccia.gemspec, but Bundler is
+# remarkably stupid about gems needed *by* the gemspec.
+#
+#gemspec
+
+RUBY_ENGINE	= 'ruby' unless (defined?(RUBY_ENGINE))
+
+group(:default, :development, :test) do
+  gem('bundler',	'>= 1.0.7')
+  gem('versionomy',	'>= 0.4.4')
+  #
+  # This is obnoxious; it'd be better to do a
+  #   if :platform >= :mri_20  # (pseudocode)
+  # and not have to maintain explicit versions moving forward.
+  #
+  platforms(:mri_18) do
+    gem('ruby-debug',	'>= 0')
+  end
+  platforms(:mri_19) do
+    gem('debugger',	'>= 0')
+  end
+  platforms(:mri_20, :mri_21) do
+    gem('byebug',	'>= 0')
+  end
+
+  gem('fibonaccia',
+      :path		=> '.')
+end
+
+group(:test, :development) do
+  gem('aruba')
+  gem('cucumber')
+  gem('rake')
+  gem('simplecov',
+      :require		=> false)
+  gem('rdiscount')
+  gem('redcarpet',	'< 3.0.0')
+  gem('rdoc')
+  gem('yard',		'~> 0.8.6')
+end
