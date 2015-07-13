@@ -32,7 +32,7 @@ or the number of terms in the series-so-far:
 `Fibonaccia` attempts to be memory-efficient by only deriving the
 series to the extent needed by the caller (*i.e.*, if you ask for the
 tenth Fibonacci number, `Fibonaccia` will internally extend its series
-to eleven (terms) if it hasn't already; if you then ask for the eighth
+to eleven terms if it hasn't already; if you then ask for the eighth
 number, it will return the value from the already-extended internal
 series).
 

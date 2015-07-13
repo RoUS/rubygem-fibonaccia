@@ -150,10 +150,42 @@ module Fibonaccia
     end                         # def extend_series
     protected(:extend_series)
 
-    def each
-      result		= SERIES.each { |o| yield(o) }
+    #
+    # Provide the iterator required by the {Enumerable} mix-in.  Walk
+    # through the series and yield each value in turn.
+    #
+    # @yield o
+    #   Each element of the currently-evolved series is yielded in turn.
+    #
+    # @return [Array]
+    #
+    def each(&block)
+      result		= SERIES.each(&block)
       return result
     end                         # each
+
+    #
+    # Return the last value in the sequence so far calculated.  This
+    # method is *not* part of {Enumerable}, so we add it explicitly.
+    #
+    # @return [Integer]
+    #   The last value in the Fibonacci series as so far evolved.
+    #
+    def last
+      result		= SERIES.last
+      return result
+    end                         # def last
+
+    #
+    # Reset our internal series to just the seed value.  This can be
+    # used to free up memory.
+    #
+    # @return [void]
+    #
+    def reset
+      SERIES.replace([ 0, 1, 1 ])
+      return nil
+    end                         # def reset
 
     #
     # Return a slice (see Array#slice) of the Fibonacci series.
@@ -232,6 +264,46 @@ module Fibonaccia
     # @return (see #slice)
     #
     define_method(:[], self.instance_method(:slice))
+
+    #
+    # Check to see if a given value is found in the Fibonacci series.
+    # Unfortunately we need to iterate and extend our internal series
+    # because of precision issues; the elegant mechanism described in
+    # the 'see also' doesn't work when there are too many digits
+    # involved.  Ruby loses track of them.
+    #
+    # @see https://en.wikipedia.org/wiki/Fibonacci_number#Recognizing_Fibonacci_numbers
+    #
+    # @param [Object] val
+    #    Value to be checked for membership in the Fibonacci series.
+    #
+    # @return [Boolean]
+    #    <tt>true</tt> if the given value is a Fibonacci number, else <tt>false</tt>.
+    #
+    def is_fibonacci?(val)
+      #
+      # Needs to be an integer.
+      #
+      return false if (! val.kind_of?(Integer))
+      #
+      # Needs to be non-negative.
+      #
+      return false if (val < 0)
+      #
+      # See if we've already derived the value and it's in our list (quick lookup).
+      #
+      while (true)
+        return true if (SERIES.include?(val))
+        break if (SERIES.last >= val)
+        self.extend_series(self.count + 10)
+      end
+      #
+      # We break out when we've extended the series past the value
+      # being tested.  If it was in the series, we would have already
+      # returned <tt>true</tt> and not gotten here.
+      #
+      return false
+    end                         # is_fibonacci?
 
   end                           # module Fibonaccia eigenclass
 

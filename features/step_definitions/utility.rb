@@ -32,6 +32,7 @@ Then(%r!^the return value should be (.*)$!) do |xval|
 end
 
 Then(%r!^the return value should be:$!) do |xval|
+  debugger
   expect(@return_value).to eq(eval(xval))
 end
 
