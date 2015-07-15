@@ -10,6 +10,7 @@ RUBY_ENGINE	= 'ruby' unless (defined?(RUBY_ENGINE))
 
 group(:default, :development, :test) do
   gem('bundler',	'>= 1.0.7')
+  gem('bigdecimal')
   gem('versionomy',	'>= 0.4.4')
   #
   # This is obnoxious; it'd be better to do a

@@ -17,7 +17,7 @@
 
 require('fibonaccia/version')
 require('fibonaccia/exceptions')
-require('byebug')
+require('bigdecimal')
 
 #
 # The *Fibonaccia* module simply provides three things to Ruby code:
@@ -346,15 +346,16 @@ module Fibonaccia
     define_method(:[], self.instance_method(:slice))
 
     #
-    # Check to see if a given value is found in the Fibonacci series.
-    # Unfortunately we need to iterate and extend our internal series
-    # because of precision issues; the elegant mechanism described in
-    # the 'see also' doesn't work when there are too many digits
-    # involved.  Ruby loses track of them.
+    # Check to see if a given value is found in the Fibonacci series,
+    # using the transform described at
+    # {https://en.wikipedia.org/wiki/Fibonacci_number#Recognizing_Fibonacci_numbers}.
+    #
+    # We need to use the <tt>BigDecimal</tt> module to deal with the
+    # extra precision required.
     #
     # @see https://en.wikipedia.org/wiki/Fibonacci_number#Recognizing_Fibonacci_numbers
     #
-    # @param [Object] val
+    # @param [Integer] val
     #    Value to be checked for membership in the Fibonacci series.
     #
     # @return [Boolean]
@@ -364,24 +365,21 @@ module Fibonaccia
       #
       # Needs to be an integer.
       #
-      return false if (! val.kind_of?(Integer))
+      return false if (val.floor != val)
       #
       # Needs to be non-negative.
       #
       return false if (val < 0)
+      return true if (SERIES.include?(val))
       #
-      # See if we've already derived the value and it's in our list (quick lookup).
+      # Easy checks are done, time for some math-fu.
       #
-      while (true)
-        return true if (SERIES.include?(val))
-        break if (SERIES.last >= val)
-        self.grow(10)
+      val		= BigDecimal.new(val)
+      [ +4, -4 ].each do |c|
+        eqterm		= 5 * (val**2) + c
+        root		= eqterm.sqrt(BigDecimal::double_fig)
+        return true if (root.floor == root)
       end
-      #
-      # We break out when we've extended the series past the value
-      # being tested.  If it was in the series, we would have already
-      # returned <tt>true</tt> and not gotten here.
-      #
       return false
     end                         # is_fibonacci?
 
