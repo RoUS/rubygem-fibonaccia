@@ -52,3 +52,9 @@ Then(%r!^the return value should include:$!) do |xval|
   expect(@return_value.include?(eval(xval))).to eq(true)
 end
 
+Then(%r!^attribute ["']([_=A-Za-z0-9]+)["'] should have value (["']?.*?["']?)$!) do |mname,xval|
+  args          = eval("[#{xval}]")
+  wrap_exception do
+    @exemplar.send(mname, *args)
+  end
+end

@@ -2,7 +2,7 @@ Given(%r!the internal series (?:is|has been) reset$!) do
   @exemplar.reset
 end
 
-When(%r!^I (?:query|invoke) (?:attribute|method) ["']?([_A-Za-z0-9?]+)["']?\((.*?)\)["']?$!) do |attr,args|
+When(%r!^I (?:query|invoke) (?:attribute|method) ["']?([\[\]_=A-Za-z0-9?]+)["']?\((.*?)\)["']?$!) do |attr,args|
   args		= eval("[#{args}]")
   wrap_exception do
     @exemplar.send(attr.to_sym, *args)

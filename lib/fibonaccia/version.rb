@@ -28,8 +28,9 @@ module Fibonaccia
   # Enforce our minimum requirement.
   #
   if (Versionomy.ruby_version < MINIMUM_RUBY_VERSION)
-    raise RuntimeError.new("minimum Ruby version required is #{MINIMUM_RUBY_VERSION.to_s}, " +
-                           "running #{Versionomy.ruby_version.to_s}")
+    raise(RuntimeError,
+          "minimum Ruby version required is #{MINIMUM_RUBY_VERSION.to_s}, " +
+          "running #{Versionomy.ruby_version.to_s}")
   end
 
   #

@@ -17,6 +17,7 @@
 
 require('fibonaccia/version')
 require('fibonaccia/exceptions')
+require('byebug')
 
 #
 # The *Fibonaccia* module simply provides three things to Ruby code:
@@ -28,8 +29,9 @@ require('fibonaccia/exceptions')
 # 2. The Fibonacci sequence, to however many places you desire (and your resources
 #    can support);
 # 3. Coördinates to construct a {https://en.wikipedia.org/wiki/Golden_spiral golden spiral}
-#    (*not* the Fibonacci spiral, which is an approximation of the golden spiral), again
-#    to the precision specified by the caller.
+#    (<b>not</b> the Fibonacci spiral, which is an approximation of
+#    the golden spiral), again to the precision specified by the
+#    caller.
 #
 # <b><i>N.B.</i></b>: #3 is not yet implemented.
 #
@@ -70,6 +72,11 @@ module Fibonaccia
       # with the first three terms.
       #
       SERIES		= [ 0, 1, 1 ]
+
+      #
+      # Minimum number of terms in the series -- the seed values.
+      #
+      MIN_TERMS		= SERIES.count
     end
 
     include Enumerable
@@ -116,33 +123,20 @@ module Fibonaccia
       return SERIES.dup
     end                         # def series
 
-    #
-    # As the {SERIES internally-maintained series} grows, this method allows
-    # the caller to find out how many terms have been calculated so
-    # far.
-    #
-    # @return [Integer]
-    #   Returns the number of terms in the module's
-    #   currently-calculated series.
-    #
-    def count
-      return SERIES.count
-    end                         # def count
-
     # @api private
     #
     # This method is called to extend the {SERIES} array if necessary.
     #
-    # @param [Integer] terms
+    # @param [Integer] nterms
     #   If the value of this parameter is greater than the number of
     #   terms in the {SERIES} array, new terms are calculated until
     #   the series is long enough.
     #
     # @return [void]
     #
-    def extend_series(terms)
-      terms		= [ 0, terms.to_i ].max
-      n			= [ 0, terms - self.count ].max
+    def extend_series(nterms)
+      nterms		= [ 0, nterms.to_i ].max
+      n			= [ 0, nterms - self.terms ].max
       n.times do
         SERIES		<< (SERIES[-2] + SERIES[-1])
       end
@@ -151,7 +145,104 @@ module Fibonaccia
     protected(:extend_series)
 
     #
-    # Provide the iterator required by the {Enumerable} mix-in.  Walk
+    # Extend the internal series by the specified number of terms.
+    #
+    # @param [Integer] nterms
+    #   Number of terms by which to grow the internal series.
+    # @return [Integer]
+    #   the number of terms in the series after the operation.
+    #
+    # @raise [Fibonaccia::NotPositiveInteger]
+    #   if the argument isn't an integer greater than or equal to zero.
+    #
+    def grow(nterms)
+      unless (nterms.kind_of?(Integer) && (nterms >= 0))
+        msg		= 'argument must be a non-negative integer'
+        raise(Fibonaccia::NotPositiveInteger, msg)
+      end
+      self.extend_series(self.terms + nterms)
+      return self.terms
+    end                         # def grow
+
+    #
+    # User-space method to shrink the internal series to the specified
+    # number of terms (if it isn't already).
+    #
+    # @note
+    #   The series <b><i>cannot</i></b> be shrunk to fewer than {MIN_TERMS} elements.
+    #
+    # @param [Integer] nterms
+    #   Number of terms by which to shrink the internal series.
+    # @return [Integer]
+    #   the number of terms in the series after the operation.
+    #
+    # @raise [Fibonaccia::NotPositiveInteger]
+    #   if the argument isn't an integer greater than or equal to zero.
+    #
+    def shrink(nterms)
+      unless (nterms.kind_of?(Integer) && (nterms >= 0))
+        msg		= 'argument must be a non-negative integer'
+        raise(Fibonaccia::NotPositiveInteger, msg)
+      end
+      nterms		= [ MIN_TERMS, self.terms - nterms ].max
+      SERIES.replace(SERIES.take(nterms))
+      return self.terms
+    end                         # def shrink
+
+    #
+    # Similar to the #count method provided by the <tt>Enumerable</tt>
+    # mix-in, but a more direct approach -- and complementary to
+    # #terms=
+    #
+    # @return [Integer]
+    #   number of terms in the internal series.
+    #
+    def terms
+      result		= SERIES.count
+      return result
+    end                         # def terms
+
+    #
+    # Set the internal series to a specific number of terms.
+    #
+    # @note
+    #   The series <b><i>cannot</i></b> be set to fewer than {MIN_TERMS} elements.
+    #
+    # @param [Integer] nterms
+    #   Number of terms to which the series should be grown or shrunk.
+    # @return [Integer]
+    #   the number of terms in the series after the operation.
+    #
+    # @raise [Fibonaccia::NotPositiveInteger]
+    #   if the argument isn't an integer greater than or equal to zero.
+    #
+    def terms=(nterms)
+      unless (nterms.kind_of?(Integer) && (nterms >= 0))
+        msg		= 'argument must be a non-negative integer'
+        raise(Fibonaccia::NotPositiveInteger, msg)
+      end
+      nterms		= [ MIN_TERMS, nterms ].max
+      if (nterms > self.terms)
+        self.grow(nterms - self.terms)
+      elsif (nterms < self.terms)
+        self.shrink(self.terms - nterms)
+      end
+      return self.terms
+    end                         # def terms=
+
+    #
+    # Reset our internal series to just the seed value.  This can be
+    # used to free up memory.
+    #
+    # @return [void]
+    #
+    def reset
+      SERIES.replace([ 0, 1, 1 ])
+      return nil
+    end                         # def reset
+
+    #
+    # Provide the iterator required by the <tt>Enumerable</tt> mix-in.  Walk
     # through the series and yield each value in turn.
     #
     # @yield o
@@ -166,7 +257,7 @@ module Fibonaccia
 
     #
     # Return the last value in the sequence so far calculated.  This
-    # method is *not* part of {Enumerable}, so we add it explicitly.
+    # method is *not* part of <tt>Enumerable</tt>, so we add it explicitly.
     #
     # @return [Integer]
     #   The last value in the Fibonacci series as so far evolved.
@@ -177,17 +268,6 @@ module Fibonaccia
     end                         # def last
 
     #
-    # Reset our internal series to just the seed value.  This can be
-    # used to free up memory.
-    #
-    # @return [void]
-    #
-    def reset
-      SERIES.replace([ 0, 1, 1 ])
-      return nil
-    end                         # def reset
-
-    #
     # Return a slice (see Array#slice) of the Fibonacci series.
     #
     # The internal {SERIES} array will be extended, if necessary, to
@@ -196,26 +276,26 @@ module Fibonaccia
     # @param [Integer] first_term
     #   The first term of the slice from the series.
     #   <b><i>N.B.</i></b>: The series is *zero-based!*
-    # @param [Integer] terms
+    # @param [Integer] nterms
     #   The number of elements in the slice to be returned.
     #
     # @return [nil]
-    #   if the slice parameters are not meaningful (_e.g._, <tt>slice(1, -1)</tt>).
+    #   if the slice parameters are not meaningful (<i>e.g.</i>, <tt>slice(1, -1)</tt>).
     # @return [Integer]
     #   if the result is a valid slice containing only one term
-    #   (_i.e._, <tt>terms</tt> is 1).  Returns the Fibonacci term at
+    #   (_i.e._, <tt>nterms</tt> is 1).  Returns the Fibonacci term at
     #   the specified (zero-based) position in the sequence.
     # @return [Array<Integer>]
-    #   if the result is a valid multi-element slice (_e.g._, <tt>terms</tt>
+    #   if the result is a valid multi-element slice (<i>e.g.</i>, <tt>nterms</tt>
     #   is greater than 1).  Returns the specified slice.
     #
     # @raise [ArgumentError]
     #   if the arguments are not all integers.
     #
-    def slice(first_term, terms=1)
+    def slice(first_term, nterms=1)
       args		= {
         'first_term'	=> first_term,
-        'terms'		=> terms,
+        'nterms'	=> nterms,
       }
       #
       # Sanity-check our arguments; be more informative than the default
@@ -224,14 +304,14 @@ module Fibonaccia
       #
       args.each do |argname,argval|
         unless (argval.kind_of?(Integer))
-          raise ArgumentError.new("#{argname} must be an integer")
+          raise(ArgumentError, "#{argname} must be an integer")
         end
       end
-      terms		= [ 1, terms ].max
+      nterms		= [ 1, nterms ].max
       if (first_term < 0)
-        endpoint	= [ 0, self.count + first_term + terms ].max
+        endpoint	= [ 0, self.terms + first_term + nterms ].max
       else
-        endpoint	= first_term + terms
+        endpoint	= first_term + nterms
       end
       Fibonaccia.extend_series(endpoint)
       #
@@ -239,7 +319,7 @@ module Fibonaccia
       # method, so build its argument list appropriately.
       #
       args		= [ first_term ]
-      args		<< terms unless (terms == 1)
+      args		<< nterms unless (nterms == 1)
       result		= SERIES.slice(*args)
       #
       # If we got a multi-element slice, make sure we don't return our
@@ -250,7 +330,7 @@ module Fibonaccia
       return result
     end
 
-    # @!method [](first_term, terms=1)
+    # @!method [](first_term, nterms=1)
     #
     # <tt>\#[]</tt> is an alias for {slice}, but <tt>Module</tt>
     # doesn't have `#alias_method`.
@@ -295,7 +375,7 @@ module Fibonaccia
       while (true)
         return true if (SERIES.include?(val))
         break if (SERIES.last >= val)
-        self.extend_series(self.count + 10)
+        self.grow(10)
       end
       #
       # We break out when we've extended the series past the value

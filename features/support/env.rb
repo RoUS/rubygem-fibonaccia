@@ -66,13 +66,13 @@ module Fibonaccia_TestSupport
   #
   def capture_streams(*stms, &block)
     if (stms.any? { |o| (! (o.kind_of?(String) || o.kind_of?(Symbol))) })
-      raise ArgumentError.new('streams must be strings or symbols')
+      raise(ArgumentError, 'streams must be strings or symbols')
     end
     ovalues	= stms.inject({}) { |memo,stm|
       stmname	= stm.to_s
       stmobj	= eval(stmname)
       unless (stmobj.kind_of?(IO))
-        raise ArgumentError.new("'#{stm.inspect}' is not an IO object")
+        raise(ArgumentError, "'#{stm.inspect}' is not an IO object")
       end
       stat	= {
         :persistent	=> stmobj,
@@ -131,11 +131,13 @@ module Fibonaccia_TestSupport
     return capture_stream(:$stderr, &block)
   end                           # def capture_stderr
 
+  # @private
   #
   # Wrap the specified block in a rescue block so we can capture any
   # exceptions.
   #
   # @yield
+  #   Yields to the block, passing no arguments.
   #
   # @return [nil,Object]
   #   Returns the exit value of the block (whatever it may be), or
@@ -151,7 +153,7 @@ module Fibonaccia_TestSupport
       #
       result		= block.call
       @return_value	||= result
-    rescue Exception => exc
+    rescue => exc
       @exception_raised	= exc
       @return_value	= nil
     end
@@ -161,15 +163,3 @@ module Fibonaccia_TestSupport
 end                             # module Fibonaccia_TestSupport
 
 include Fibonaccia_TestSupport
-
-def wrap_exception(&block)
-  @exception_raised	= nil
-  @return_value		= nil
-  begin
-    result		= block.call
-    @return_value	||= result
-  rescue Exception => exc
-    @exception_raised	= exc
-  end
-end
-
