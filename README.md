@@ -27,7 +27,14 @@ derive it:
 
 or the number of terms in the series-so-far:
 
-    term_count = Fibonaccia.count
+    term_count = Fibonaccia.terms
+
+or check to see if an arbitrary integer is a Fibonacci number:
+
+    Fibonaccia.is_fibonacci?(354224848179261915075)
+    => true
+    Fibonaccia.is_fibonacci?(354224848179261915075 + 1)
+    => false
 
 `Fibonaccia` attempts to be memory-efficient by only deriving the
 series to the extent needed by the caller (*i.e.*, if you ask for the
@@ -38,20 +45,60 @@ series).
 
     Fibonaccia.series
     => [ 0, 1, 1 ]
-    Fibonaccia.count
+    Fibonaccia.terms
     => 3
     Fibonaccia[12]
     => 144
     Fibonaccia.series
     => [ 0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144 ]
-    Fibonaccia.count
+    Fibonaccia.terms
     => 13
     Fibonaccia[8]
     => 21
     Fibonaccia.series
     => [ 0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144 ]
-    Fibonaccia.count
+    Fibonaccia.terms
     => 13
+
+If memory becomes a concern, you can trim the internal series back to
+the initial three terms:
+
+    Fibonaccia.reset
+    Fibonaccia.terms
+    => 3
+
+You can grow or shrink the list by any number of terms (although you
+**cannot** shrink it to fewer than 3):
+
+    Fibonaccia.terms
+    => 3
+    Fibonaccia.grow(20)
+    => 23
+    Fibonaccia.terms
+    => 23
+    Fibonaccia.shrink(10)
+    => 13
+    Fibonaccia.terms
+    => 13
+
+or you can set the size of the series to any arbitrary number of terms
+(again, you cannot set the series to fewer than 3 terms):
+
+    Fibonaccia.reset
+    Fibonaccia.terms
+    => 3
+    Fibonaccia.terms = 2048
+    Fibonaccia.terms
+    => 2048
+
+## Plans for the Future
+
+I intend to extend this module in the near future to allow requesting
+arrays of coördinates along a
+[golden spiral](https://en.wikipedia.org/wiki/Golden_spiral), either polar or
+rectangular.
+
+And who knows what other features may occur.
 
 ## Installation
 
