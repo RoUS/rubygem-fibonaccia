@@ -1,6 +1,7 @@
 # Fibonaccia
 
 [![Gem Version](https://badge.fury.io/rb/fibonaccia.svg)](http://badge.fury.io/rb/fibonaccia)
+[![Build Status](https://travis-ci.org/RoUS/rubygem-fibonaccia.svg?branch=master)](https://travis-ci.org/RoUS/rubygem-fibonaccia)
 
 *As though there weren't enough Ruby gems for dealing with the Fibonacci sequence.. here's another one!*
 
