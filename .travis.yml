@@ -19,3 +19,4 @@ before_install:
 
 script:
   - bundle exec rake features
+  - bundle exec rake yard
