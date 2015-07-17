@@ -27,11 +27,11 @@ Then(%r!^the return value should NOT be a kind of:$!) do |xval|
   expect(@return_value.kind_of?(eval(xval))).not_to eq(true)
 end
 
-Then(%r!^the return value should be (.*)$!) do |xval|
+Then(%r!^the return value should be exactly (.*)$!) do |xval|
   expect(@return_value).to eq(eval(xval))
 end
 
-Then(%r!^the return value should be:$!) do |xval|
+Then(%r!^the return value should be exactly:$!) do |xval|
   debugger
   expect(@return_value).to eq(eval(xval))
 end

@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
-#--
+# @internal_comment
+#
 #   Copyright © 2015 Ken Coar
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,49 +14,111 @@
 #   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
-#++
+#
 
+require('fibonaccia/module-doc')
 require('fibonaccia/version')
 require('fibonaccia/exceptions')
 require('bigdecimal')
+require('bigdecimal/math')
 
-#
-# The *Fibonaccia* module simply provides three things to Ruby code:
-#
-# 1. A constant, <tt>Fibonaccia::PHI</tt> (φ), which is the value of
-#    the Golden Ratio (see the
-#    {https://en.wikipedia.org/wiki/Golden_ratio Wikipedia article})
-#    to whatever precision Ruby is using;
-# 2. The Fibonacci sequence, to however many places you desire (and your resources
-#    can support);
-# 3. Coördinates to construct a {https://en.wikipedia.org/wiki/Golden_spiral golden spiral}
-#    (<b>not</b> the Fibonacci spiral, which is an approximation of
-#    the golden spiral), again to the precision specified by the
-#    caller.
-#
-# <b><i>N.B.</i></b>: #3 is not yet implemented.
-#
 module Fibonaccia
 
-  unless (Fibonaccia.const_defined?('PHI'))
+  include BigMath
+
+  # @api private
+  #
+  # The number of digits of precision we want for our <tt>BigDecimal</tt> operations.
+  #
+  BDPrecision		= BigDecimal::double_fig
+
+  unless (Fibonaccia.const_defined?('PHI_Float'))
+    # @api private
     #
     # Phi (φ), the golden ratio.  φ can be simply expressed by a
-    # formula, but it's an irrational number, meaning that the precision
-    # is implementation-specific.
+    # formula, but it's an irrational number, meaning that the default
+    # precision is implementation-specific.
     #
-    PHI			= (1.0 + Math.sqrt(5)) / 2.0
+    # Provide a <tt>Float</tt> value which uses the default precision.
+    #
+    # @note
+    #   Use <tt>Fibonaccia.PHI</tt> or <tt>Fibonaccia.PHI(false)</tt>
+    #   to access this value.
+    #
+    # @see PHI
+    #
+    PHI_Float		= (1.0 + Math.sqrt(5)) / 2.0
+
+    # @!macro PHIconst
+    #
+    #   Default value of φ as a <tt>Float</tt>.
+    #
+    #   Referencing <tt>PHI</tt> as a constant
+    #   (<tt>Fibonaccia::PHI</tt>) is equivalent to:
+    #
+    #       Fibonaccia.PHI(false)
+    #
+    #   Use {Fibonaccia.PHI}<tt>(true)</tt> to obtain the
+    #   <tt>BigDecimal</tt> representation.
+    #
+
+    # @macro PHIconst
+    PHI			= PHI_Float
+
+    # @api private
+    #
+    # Provide a value for φ using an arbitrarily large precision.
+    #
+    # @note
+    #   Use <tt>Fibonaccia.PHI(true)</tt> to access this value.
+    #
+    # @see PHI
+    #
+    PHI_BigDecimal	= (1.0 + BigDecimal.new(5).sqrt(BDPrecision)) / 2.0
   end
 
-  unless (::Fibonaccia.const_defined?('B') && ::Fibonaccia.const_defined?('C'))
-    #
-    # Constant used to construct a Golden Spiral.  See the
-    # {https://en.wikipedia.org/wiki/Golden_spiral Wikipedia article}
-    # for details of its definition and use.
-    #
-    B			= (2.0 * Math.log(PHI)) / Math::PI
+  #
+  # This bit of jiggery-pokery exists because we don't want to expose
+  # the *real* definition of PHI (which is PHI_Float) in the
+  # documentation.  So we wrap a fake one in a never-successful
+  # conditional, and Yard uses that.
+  #
+  # :nocov:
+  if (false)
+    # @macro PHIconst
+    PHI			= calculated_constant
+  end
+  # :nocov:
 
-    # (see B)
-    C			= Math.exp(B)
+  unless (::Fibonaccia.const_defined?('B_Float'))
+    # @!macro SpiralFactors
+    #   Constant used to construct a Golden Spiral.  See the
+    #   {https://en.wikipedia.org/wiki/Golden_spiral Wikipedia article}
+    #   for details of its definition and use.
+
+    # @api private
+    #
+    # @macro SpiralFactors
+    #
+    # This constant is a <tt>Float</tt> value.  For greater precision,
+    # use {B_BigDecimal}.
+    #
+    B_Float		= (2.0 * Math.log(PHI_Float)) / Math::PI
+
+    # @api private
+    #
+    # @macro SpiralFactors
+    #
+    # This constant is a <tt>BigDecimal</tt> value.  If you don't need
+    # arbitrarily great precision, use {B_BigDecimal} instead.
+    #
+    B_BigDecimal	= ((2.0 * BigMath.log(PHI_BigDecimal, BDPrecision)) / BigMath.PI(BDPrecision))
+
+    # (see B_Float)
+    C_Float		= Math.exp(B_Float)
+
+    # (see B_BigDecimal)
+    C_BigDecimal	= BigMath.exp(B_BigDecimal, BDPrecision)
   end
 
   #
@@ -64,23 +127,34 @@ module Fibonaccia
   #
   class << self
 
+    include BigMath
+
     unless (const_defined?('SERIES'))
+      #
+      # First three terms of the Fibonacci sequence, which is our seed
+      # and our minimum internal series.
+      #
+      SEED		= [ 0, 1, 1 ].freeze
+
+      # @api private
+      #
+      # Minimum number of terms in the series -- the seed values.
+      #
+      MIN_TERMS		= SEED.count
+
+      # @api private
       #
       # Array of Fibonacci numbers to however many terms have been
       # evolved.  Defined as a constant because the underlying array
       # structure is mutable even for constants, and it's pre-seeded
       # with the first three terms.
       #
-      SERIES		= [ 0, 1, 1 ]
-
-      #
-      # Minimum number of terms in the series -- the seed values.
-      #
-      MIN_TERMS		= SERIES.count
+      SERIES		= SEED.dup
     end
 
     include Enumerable
 
+    # @private
     #
     # Method invoked when a scope does an <b><tt>include Fibonaccia</tt></b>.  We
     # simply emit a warning message and do nothing else.
@@ -97,14 +171,81 @@ module Fibonaccia
     end                         # def included
 
     #
-    # Return a copy of the current Fibonacci sequence to whatever
-    # point it has been evolved.  We return a _copy_ so our actual
-    # array can't be accidentally polluted by whatever the caller may
-    # do to what we give it.
+    # Constant Phi (φ), the golden ratio.
     #
-    # <b><i>N.B.</i></b>: Since this is a duplicate of the module-internal
-    # array, it can have a significant impact on memory usage if the
-    # series has been extended to any great length.
+    # φ can be simply expressed by a formula, but it's an irrational
+    # number, meaning that the default precision is
+    # implementation-specific.  {PHI} allows you to access the value
+    # either at the implementation precision, or the
+    # <tt>BigDecimal</tt> extended precision.
+    #
+    # @!macro PHIdoc
+    #   @param [Boolean] extended
+    #
+    #   @return [Float]
+    #     when <tt>extended</tt> is false (or at least not a true value).
+    #   @return [BigDecimal]
+    #     when <tt>extended</tt> is true.
+    #
+    #   @example Using conventional 'constant' semantics
+    #       irb> Fibonaccia::PHI
+    #       => 1.618033988749895
+    #       irb> Fibonaccia::PHI(false)
+    #       => 1.618033988749895
+    #       irb> Fibonaccia::PHI(true)
+    #       => #<BigDecimal:198e990,'0.1618033988 7498948482 0458683433 33333335E1',54(72)>
+    #
+    #   @example Using module method semantics
+    #       irb> Fibonaccia.PHI
+    #       => 1.618033988749895
+    #       irb> Fibonaccia.PHI(false)
+    #       => 1.618033988749895
+    #       irb> Fibonaccia.PHI(true)
+    #       => #<BigDecimal:198e990,'0.1618033988 7498948482 0458683433 33333335E1',54(72)>
+    #
+    # @macro PHIdoc
+    #
+    def PHI(extended=false)
+      result		= (extended \
+                           ? PHI_BigDecimal \
+                           : PHI_Float)
+      return result
+    end                         # def PHI
+
+    # @internal_comment
+    #
+    # I can't get Yard to process the phi as a method name, so it's
+    # just undocumented.  Meh.
+    #
+
+    # @api private
+    #
+    #   Alias name (probably not universally useable) for the {PHI} method.
+    #
+    #   @macro PHIdoc
+    #
+    define_method(:'φ', self.instance_method(:PHI))
+
+    # @api private
+    #
+    # We return a <i>copy</i> so our actual array can't be accidentally
+    # polluted by whatever the caller may do to what we give it.
+    #
+
+    #
+    # Copy of the internal series.
+    #
+    # Return a <tt>dup</tt> of the internal series, to however many
+    # terms it has grown.
+    #
+    # @note
+    #   Since this is a duplicate of the module-internal array, it can
+    #   have a significant impact on memory usage if the series has
+    #   been extended to any great length.
+    #
+    # @see reset
+    # @see shrink
+    # @see terms=
     #
     # @example
     #   irb> require('fibonaccia')
@@ -165,12 +306,14 @@ module Fibonaccia
     end                         # def grow
 
     #
-    # User-space method to shrink the internal series to the specified
-    # number of terms (if it isn't already).
+    # Shrink the internal series by the specified number of terms.
     #
-    # @note
-    #   The series <b><i>cannot</i></b> be shrunk to fewer than {MIN_TERMS} elements.
+    # @!macro minsize
+    #   @note
+    #     The series <b><i>cannot</i></b> be shrunk to fewer than the
+    #     {SEED} elements.
     #
+    # @macro minsize
     # @param [Integer] nterms
     #   Number of terms by which to shrink the internal series.
     # @return [Integer]
@@ -190,9 +333,11 @@ module Fibonaccia
     end                         # def shrink
 
     #
+    # The number of terms in the internal series.
+    #
     # Similar to the #count method provided by the <tt>Enumerable</tt>
     # mix-in, but a more direct approach -- and complementary to
-    # #terms=
+    # the {terms=} method.
     #
     # @return [Integer]
     #   number of terms in the internal series.
@@ -205,9 +350,7 @@ module Fibonaccia
     #
     # Set the internal series to a specific number of terms.
     #
-    # @note
-    #   The series <b><i>cannot</i></b> be set to fewer than {MIN_TERMS} elements.
-    #
+    # @macro minsize
     # @param [Integer] nterms
     #   Number of terms to which the series should be grown or shrunk.
     # @return [Integer]
@@ -231,36 +374,49 @@ module Fibonaccia
     end                         # def terms=
 
     #
-    # Reset our internal series to just the seed value.  This can be
-    # used to free up memory.
+    # Reset the internal series to just the seed value.
+    #
+    # This can be used to free up memory.
     #
     # @return [void]
     #
     def reset
-      SERIES.replace([ 0, 1, 1 ])
+      SERIES.replace(SEED)
       return nil
     end                         # def reset
 
     #
-    # Provide the iterator required by the <tt>Enumerable</tt> mix-in.  Walk
-    # through the series and yield each value in turn.
+    # Iterate over the current internal series, yielding each value in
+    # turn.
     #
-    # @yield o
-    #   Each element of the currently-evolved series is yielded in turn.
+    # @yield [Integer]
+    #   Each element of the internal series is yielded in turn.
     #
-    # @return [Array]
+    # @return [Array<Integer>]
+    #   if a block has been passed.
+    # @return [Enumerator]
+    #   when invoked without a block.
     #
     def each(&block)
       result		= SERIES.each(&block)
       return result
     end                         # each
 
+    # @internal_comment
     #
-    # Return the last value in the sequence so far calculated.  This
-    # method is *not* part of <tt>Enumerable</tt>, so we add it explicitly.
+    # The following method is *not* part of <tt>Enumerable</tt>, so we
+    # add it explicitly.
+    #
+
+    #
+    # Return the last value in the internal series.
+    #
+    # This is equivalent to
+    #
+    #     Fibonaccia[-1]
     #
     # @return [Integer]
-    #   The last value in the Fibonacci series as so far evolved.
+    #   the last term in the internal series.
     #
     def last
       result		= SERIES.last
@@ -268,26 +424,29 @@ module Fibonaccia
     end                         # def last
 
     #
-    # Return a slice (see Array#slice) of the Fibonacci series.
+    # Obtain a slice (see Array#slice) of the Fibonacci series.
     #
-    # The internal {SERIES} array will be extended, if necessary, to
-    # include all terms requested.
+    # The internal series will be extended, if necessary, to include
+    # all terms requested.
+    #
+    # @note
+    #   The internal series is *zero-based*, which means the first
+    #   term is numbered <tt>0</tt>.
     #
     # @param [Integer] first_term
     #   The first term of the slice from the series.
-    #   <b><i>N.B.</i></b>: The series is *zero-based!*
     # @param [Integer] nterms
     #   The number of elements in the slice to be returned.
     #
-    # @return [nil]
-    #   if the slice parameters are not meaningful (<i>e.g.</i>, <tt>slice(1, -1)</tt>).
     # @return [Integer]
     #   if the result is a valid slice containing only one term
-    #   (_i.e._, <tt>nterms</tt> is 1).  Returns the Fibonacci term at
+    #   (<i>i.e.</i>, <tt>nterms</tt> is 1).  Returns the Fibonacci term at
     #   the specified (zero-based) position in the sequence.
     # @return [Array<Integer>]
     #   if the result is a valid multi-element slice (<i>e.g.</i>, <tt>nterms</tt>
     #   is greater than 1).  Returns the specified slice.
+    # @return [nil]
+    #   if the slice parameters are not meaningful (<i>e.g.</i>, <tt>slice(1, -1)</tt>).
     #
     # @raise [ArgumentError]
     #   if the arguments are not all integers.
@@ -330,28 +489,39 @@ module Fibonaccia
       return result
     end
 
+    # @internal_comment
+    #
+    # <tt>Module</tt> doesn't have <tt>#alias_method</tt>, so we have
+    # to work sideways to make the equivalent functionality happen.
+    # And Yard doesn't pick up on <tt>define_method</tt> invocations,
+    # so we have to add the method documentation manually.
+    #
+
     # @!method [](first_term, nterms=1)
     #
-    # <tt>\#[]</tt> is an alias for {slice}, but <tt>Module</tt>
-    # doesn't have `#alias_method`.
+    # Alias for {slice} ( *q.v.*).
     #
     # This is included because it's probably more human-readable to
     # find the *n*-th term of the sequence using the syntax
     #
     #     Fibonaccia[n]
     #
-    # @param (see #slice)
-    # @return (see #slice)
+    # @see slice
     #
     define_method(:[], self.instance_method(:slice))
 
-    #
-    # Check to see if a given value is found in the Fibonacci series,
-    # using the transform described at
-    # {https://en.wikipedia.org/wiki/Fibonacci_number#Recognizing_Fibonacci_numbers}.
+    # @internal_comment
     #
     # We need to use the <tt>BigDecimal</tt> module to deal with the
-    # extra precision required.
+    # extra precision required for #is_fibonacci?.
+    #
+
+    #
+    # See if value appears in the Fibonacci series.
+    #
+    # Check to see if the given value is found in the Fibonacci series,
+    # using the transform described at
+    # {https://en.wikipedia.org/wiki/Fibonacci_number#Recognizing_Fibonacci_numbers}.
     #
     # @see https://en.wikipedia.org/wiki/Fibonacci_number#Recognizing_Fibonacci_numbers
     #
@@ -365,7 +535,7 @@ module Fibonaccia
       #
       # Needs to be an integer.
       #
-      return false if (val.floor != val)
+      return false unless (val.respond_to?(:floor) && (val.floor == val))
       #
       # Needs to be non-negative.
       #
@@ -377,7 +547,7 @@ module Fibonaccia
       val		= BigDecimal.new(val)
       [ +4, -4 ].each do |c|
         eqterm		= 5 * (val**2) + c
-        root		= eqterm.sqrt(BigDecimal::double_fig)
+        root		= eqterm.sqrt(BDPrecision)
         return true if (root.floor == root)
       end
       return false

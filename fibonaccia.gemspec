@@ -36,13 +36,13 @@ Gem::Specification.new do |s|
                            'kcoar@redhat.com',
                           ]
   s.summary       	= ("#{'%s-%s' % [ s.name, s.version, ]} - " +
-                           'Primitive level/mask-driven stream logger.')
+                           'Easy access to Fibonacci series and related things.')
   s.description   	= <<-EOD
-Primitive no-frills level/mask-driven stream logger,
-originally developed to write messages to $stderr as part
-of command-line app debugging.  But now so much more!
+Non-mixin module providing access to terms in the Fibonacci series.
+Fetch specific terms, slice the series, check to see if an arbitrary
+value is a Fibonacci number, etc.
   EOD
-  s.homepage      	= 'https://github.com/RoUS/fibonaccia'
+  s.homepage      	= 'https://github.com/RoUS/rubygem-fibonaccia'
   s.license       	= 'Apache 2.0'
 
   s.files         	= `git ls-files -z`.split("\x0")
@@ -56,15 +56,16 @@ of command-line app debugging.  But now so much more!
   s.test_files    	= s.files.grep(%r!^(test|spec|features)/!)
   s.has_rdoc		= true
   s.extra_rdoc_files	= [
-                           'README.md',
-                          ]
+    'README.md',
+    'details.md',
+  ]
   s.rdoc_options	= [
-                           '--main=README.md',
-                           '--charset=UTF-8',
-                          ]
+    '--main=README.md',
+    '--charset=UTF-8',
+  ]
   s.require_paths 	= [
-                           'lib',
-                          ]
+    'lib',
+  ]
 
   #
   # Make a hash for our dependencies, since we're using some fancy
@@ -72,6 +73,7 @@ of command-line app debugging.  But now so much more!
   # environment.
   #
   requirements_all	= {
+    'bigdecimal'	=> [],
     'versionomy'	=> [
                             '>= 0.4.3',
                            ],
@@ -100,7 +102,7 @@ of command-line app debugging.  But now so much more!
   #
   # The following bit of hanky-panky was adapted from uuidtools-2.1.3.
   #
-  if (s.respond_to?(:specification_version))
+  if (s.respond_to?(:specification_version=))
     s.specification_version = 3
 
     if (Gem::Version.new(Gem::VERSION) >= Gem::Version.new('1.2.0'))

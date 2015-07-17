@@ -6,15 +6,15 @@ Feature: Test the functionality specifically related to the Fibonacci aspect.
 
   Scenario: Test the default initial series
     When I invoke method 'series'
-    Then the return value should be [0,1,1]
+    Then the return value should be exactly [0,1,1]
     When I invoke method 'count'
-    Then the return value should be 3
+    Then the return value should be exactly 3
 
   Scenario: Test extending the series with #grow
     When I invoke method 'grow(20)'
-    Then the return value should be 23
+    Then the return value should be exactly 23
     When I invoke method 'count'
-    Then the return value should be 23
+    Then the return value should be exactly 23
 
   Scenario Outline: Test frobbing the series with #grow, #shrink, and #terms
     When I set attribute 'terms' to <terms>
@@ -47,49 +47,49 @@ Feature: Test the functionality specifically related to the Fibonacci aspect.
 
 Scenario: Test the enumeration methods
     When I invoke method 'slice(30)'
-    Then the return value should be 832040
+    Then the return value should be exactly 832040
     When I invoke method 'count'
-    Then the return value should be 31
+    Then the return value should be exactly 31
     When I invoke method 'first'
-    Then the return value should be 0
+    Then the return value should be exactly 0
 
   Scenario: Test the pseudo-enumeration methods
     When I invoke method '[30]'
-    Then the return value should be 832040
+    Then the return value should be exactly 832040
     When I invoke method 'count'
-    Then the return value should be 31
+    Then the return value should be exactly 31
     When I invoke method 'last'
-    Then the return value should be 832040
+    Then the return value should be exactly 832040
 
   Scenario: Test extending the series a little using [] notation
     When I invoke method '[20]'
-    Then the return value should be 6765
+    Then the return value should be exactly 6765
     When I invoke method 'count'
-    Then the return value should be 21
+    Then the return value should be exactly 21
 
   Scenario: Test extending the series a little using the #slice method
     When I invoke method 'slice(20)'
-    Then the return value should be 6765
+    Then the return value should be exactly 6765
     When I invoke method 'count'
-    Then the return value should be 21
+    Then the return value should be exactly 21
 
   Scenario: Test slicing out of bounds
     When I invoke method 'slice(-20)'
-    Then the return value should be nil
+    Then the return value should be exactly nil
     When I invoke method 'count'
-    Then the return value should be 3
+    Then the return value should be exactly 3
 
   Scenario: Test slicing an actual sequence
     When I invoke method '[28,3]'
-    Then the return value should be [317811, 514229, 832040]
+    Then the return value should be exactly [317811, 514229, 832040]
     When I invoke method 'count'
-    Then the return value should be 31
+    Then the return value should be exactly 31
 
   Scenario Outline: Test the #is_fibonacci? method with first 100 F-numbers
     When I invoke method 'is_fibonacci?(<testval>)'
-    Then the return value should be true
+    Then the return value should be exactly true
     When I invoke method 'is_fibonacci?(<testval> - (<testval> < 5 ? 6 : 1))'
-    Then the return value should be false
+    Then the return value should be exactly false
 
     Examples:
       |        testval        |

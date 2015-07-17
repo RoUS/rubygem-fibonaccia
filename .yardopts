@@ -1,8 +1,12 @@
 --title 'Fibonaccia - Fibonacci Series'
+--tag internal_comment:'Internal comment, not to be included in output'
+--hide-tag internal_comment
 --no-private
+--hide-api private
 --charset utf-8
 --markup markdown
 --files 'LICENCE.md'
 --files 'Changelog'
+--files 'details.md'
 'lib/**/*.rb'
 'features/**/*.rb'
