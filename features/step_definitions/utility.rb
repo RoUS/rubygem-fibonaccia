@@ -52,9 +52,7 @@ Then(%r!^the return value should include:$!) do |xval|
   expect(@return_value.include?(eval(xval))).to eq(true)
 end
 
-Then(%r!^attribute ["']([_=A-Za-z0-9]+)["'] should have value (["']?.*?["']?)$!) do |mname,xval|
-  args          = eval("[#{xval}]")
-  wrap_exception do
-    @exemplar.send(mname, *args)
-  end
+Then(%r!^the value of attribute ["']([_A-Za-z][_A-Za-z0-9]*)["'] should be exactly (["']?.*?["']?)$!) do |mname,xval|
+  attr_value	= wrap_exception { @exemplar.send(mname) }
+  expect(attr_value).to eq(eval(xval))
 end

@@ -1,24 +1,28 @@
 %global	gem_name	fibonaccia
-#%global gems_dir	%(ruby -rubygems -e 'begin ; puts(Gem::RUBYGEMS_DIR) ; rescue ; puts(Gem::dir) ; end' 2>/dev/null)
+#%global gems_dir	%(ruby -rubygems -e 'begin ; puts(Gem::RUBYGEMS_DIR) ; rescue ; puts(Gem::dir) ; end' 2> /dev/null)
 #%global gem_instdir	%{gem_dir}/gems/%{gem_name}-%{version}
 %global	rubyabi		1.8
 
 Name:		rubygem-%{gem_name}
-Version:	0.0.1
+Version:	1.0.0
 Release:	1%{?dist}
 BuildArch:	noarch
 
-Summary:	A very basic level-or-mask status logger.
+Summary:	Fibonacci series and golden relationships.
 
 Group:		Development/Languages
 
 License:	Apache 2.0
-URL:		https://github.com/RoUS/fibonaccia
+URL:		https://github.com/RoUS/rubygem-fibonaccia
 Source0:	https://rubygems.org/downloads/%{gem_name}-%{version}.gem
 
 BuildRequires:	rubygems-devel
 BuildRequires:	ruby(rubygems) >= 1.3.6
+BuildRequires:	rubygem-bundler >= 1.0.7
 
+Requires:	rubygem-bigdecimal
+Requires:	rubygem-bundler >= 1.0.7
+Requires:	rubygem-versionomy >= 0.4.3
 
 %description
 This provides a simple module for dealing with the Fibonacci

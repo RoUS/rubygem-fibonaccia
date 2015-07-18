@@ -18,17 +18,17 @@ Feature: Test the functionality specifically related to the Fibonacci aspect.
 
   Scenario Outline: Test frobbing the series with #grow, #shrink, and #terms
     When I set attribute 'terms' to <terms>
-    Then attribute 'terms' should have value <terms>
+    Then the value of attribute 'terms' should be exactly <terms>
     When I set attribute 'terms' to <terms> + 5
-    Then attribute 'terms' should have value <terms> + 5
+    Then the value of attribute 'terms' should be exactly <terms> + 5
     When I set attribute 'terms' to <terms> - 5
-    Then attribute 'terms' should have value <terms> - 5
+    Then the value of attribute 'terms' should be exactly <terms> - 5
     When I set attribute 'terms' to <terms>
     And I invoke method 'shrink(<shrink>)'
-    Then attribute 'terms' should have value <terms> - <shrink>
+    Then the value of attribute 'terms' should be exactly <terms> - <shrink>
     When I set attribute 'terms' to <terms>
     And I invoke method 'grow(<grow>)'
-    Then attribute 'terms' should have value <terms> + <grow>
+    Then the value of attribute 'terms' should be exactly <terms> + <grow>
 
     Examples:
       | terms | shrink | grow |
@@ -39,11 +39,11 @@ Feature: Test the functionality specifically related to the Fibonacci aspect.
 @coverage
   Scenario: Test the #terms growth/shrink code (coverage only)
     When I set attribute 'terms' to 20
-    Then attribute 'terms' should have value 20
+    Then the value of attribute 'terms' should be exactly 20
     And I set attribute 'terms' to 30
-    Then attribute 'terms' should have value 30
+    Then the value of attribute 'terms' should be exactly 30
     And I set attribute 'terms' to 10
-    Then attribute 'terms' should have value 10
+    Then the value of attribute 'terms' should be exactly 10
 
 Scenario: Test the enumeration methods
     When I invoke method 'slice(30)'

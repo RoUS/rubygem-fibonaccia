@@ -5,3 +5,8 @@ Before() do
                            'tmp/aruba',
                           ]
 end                             # Before
+
+Before('@reset_before') do |s|
+  debugger
+  @exemplar.reset
+end

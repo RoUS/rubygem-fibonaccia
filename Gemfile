@@ -34,7 +34,6 @@ end
 
 group(:test, :development) do
   gem('aruba')
-  gem('cucumber')
   gem('rake')
   gem('simplecov',
       :require		=> false)

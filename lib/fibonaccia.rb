@@ -16,6 +16,17 @@
 #   limitations under the License.
 #
 
+# :nocov:
+if (RUBY_VERSION =~ %r!\b1.9\b!)
+  Encoding.default_external = Encoding::UTF_8
+  Encoding.default_internal = Encoding::UTF_8
+end
+# :nocov:
+
+require('rubygems')
+require('bundler')
+Bundler.setup
+
 require('fibonaccia/module-doc')
 require('fibonaccia/version')
 require('fibonaccia/exceptions')
@@ -220,9 +231,9 @@ module Fibonaccia
 
     # @api private
     #
-    #   Alias name (probably not universally useable) for the {PHI} method.
+    # Alias name (probably not universally useable) for the {PHI} method.
     #
-    #   @macro PHIdoc
+    # @macro PHIdoc
     #
     define_method(:'φ', self.instance_method(:PHI))
 

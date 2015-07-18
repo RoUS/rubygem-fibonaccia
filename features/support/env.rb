@@ -145,19 +145,19 @@ module Fibonaccia_TestSupport
   #
   def wrap_exception(&block)
     @exception_raised	= nil
-    @return_value	= nil
+    return_value	= nil
     begin
       #
       # Do this in two steps in case the block itself puts something
       # in the @return_value ivar.
       #
       result		= block.call
-      @return_value	||= result
+      return_value	||= result
     rescue => exc
       @exception_raised	= exc
-      @return_value	= nil
+      return_value	= nil
     end
-    return @return_value
+    return return_value
   end
 
 end                             # module Fibonaccia_TestSupport
