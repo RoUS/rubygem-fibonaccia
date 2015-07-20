@@ -57,7 +57,7 @@ value is a Fibonacci number, etc.
   s.has_rdoc		= true
   s.extra_rdoc_files	= [
     'README.md',
-    'details.md',
+    'Details.md',
   ]
   s.rdoc_options	= [
     '--main=README.md',
@@ -74,23 +74,22 @@ value is a Fibonacci number, etc.
   #
   requirements_all	= {
     'bigdecimal'	=> [],
+    'bundler'		=> [
+      '~> 1.7',
+    ],
     'versionomy'	=> [
-                            '>= 0.4.3',
-                           ],
+      '>= 0.4.3',
+    ],
   }
   requirements_dev	= {
-    'aruba'		=> [],
-    'bundler'		=> [
-                            '~> 1.7',
-                           ],
     'cucumber'		=> [],
     'rake'		=> [
-                            '~> 10.0',
-                           ],
+      '~> 10.0',
+    ],
     'rdiscount'		=> [],
     'yard'		=> [
-                            '>= 0.8.2',
-                           ],
+      '>= 0.8.2',
+    ],
   }
 
   requirements_all.each do |dep,*vargs|

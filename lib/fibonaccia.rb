@@ -526,6 +526,10 @@ module Fibonaccia
     # We need to use the <tt>BigDecimal</tt> module to deal with the
     # extra precision required for #is_fibonacci?.
     #
+    # In addition, we don't use #member? or #include? for this
+    # functionality because it would onflict with the Enumerable
+    # semantics for those, which apply to the internal series.
+    #
 
     #
     # See if value appears in the Fibonacci series.
