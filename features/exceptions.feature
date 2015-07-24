@@ -31,3 +31,14 @@ Feature: Test that all the things that *should* raise exceptions -- do.
     Then it should raise an exception of type ArgumentError
     When I invoke method slice("foo", "bar")
     Then it should raise an exception of type ArgumentError
+
+  Scenario: Test that non-integer slice ([]) parameters raise exceptions
+    When I invoke method ["foo"]
+    Then it should raise an exception of type ArgumentError
+    When I invoke method ["foo", 1]
+    Then it should raise an exception of type ArgumentError
+    When I invoke method [1, "foo"]
+    Then it should raise an exception of type ArgumentError
+    When I invoke method ["foo", "bar"]
+    Then it should raise an exception of type ArgumentError
+

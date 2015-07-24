@@ -4,6 +4,18 @@ Feature: Test the #is_fibonacci? method
   Background:
     Given the internal series has been reset
 
+  Scenario: Test the #is_fibonacci? method non-integers
+    When I invoke method 'is_fibonacci?("foo")'
+    Then the return value should be exactly false
+    When I invoke method 'is_fibonacci?(:symbol)'
+    Then the return value should be exactly false
+    When I invoke method 'is_fibonacci?([])'
+    Then the return value should be exactly false
+    When I invoke method 'is_fibonacci?({})'
+    Then the return value should be exactly false
+    When I invoke method 'is_fibonacci?(Math::PI)'
+    Then the return value should be exactly false
+
   Scenario Outline: Test the #is_fibonacci? method with first 100 F-numbers
     When I invoke method 'is_fibonacci?(<testval>)'
     Then the return value should be exactly true

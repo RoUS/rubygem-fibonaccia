@@ -1,10 +1,11 @@
 %global	gem_name	fibonaccia
+%global gem_version	%(ruby -rubygems -Ilib -r%{gem_name} -e 'puts(Fibonaccia::VERSION)')
 #%global gems_dir	%(ruby -rubygems -e 'begin ; puts(Gem::RUBYGEMS_DIR) ; rescue ; puts(Gem::dir) ; end' 2> /dev/null)
 #%global gem_instdir	%{gem_dir}/gems/%{gem_name}-%{version}
 %global	rubyabi		1.8
 
 Name:		rubygem-%{gem_name}
-Version:	1.0.0
+Version:	%{gem_version}
 Release:	1%{?dist}
 BuildArch:	noarch
 

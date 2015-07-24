@@ -42,8 +42,8 @@ module Fibonaccia
   #
   # First actual release: 1.0.0!
   #
-#  @version		= @version.change(:major	=> 1,
-#               	                  :tiny		=> 0)
+  @version		= @version.change(:major	=> 1,
+	               	                  :tiny		=> 0)
 
   #
   # How to advance the version number.
