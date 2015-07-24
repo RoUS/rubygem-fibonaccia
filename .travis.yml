@@ -1,4 +1,12 @@
 --- 
+#
+# Try using the container mechanism.
+#
+sudo: false
+
+#
+# Package info.
+#
 language: ruby
 rvm:
   - 1.9.3
@@ -14,7 +22,6 @@ notifications:
     - RoUS@redhat.com
 
 before_install:
-  - sudo apt-get update -qq
   - gem install bundler
   - gem install versionomy
 
