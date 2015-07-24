@@ -50,6 +50,11 @@ module Fibonaccia
   #
   #@version		= @version.bump(:minor)
 
+  #
+  # Stupid build problems..
+  #
+  @version		= @version.bump(:tiny)
+
   @version.freeze
 
   #
