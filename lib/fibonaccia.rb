@@ -280,9 +280,10 @@ module Fibonaccia
     # This method is called to extend the {SERIES} array if necessary.
     #
     # @param [Integer] nterms
-    #   If the value of this parameter is greater than the number of
-    #   terms in the {SERIES} array, new terms are calculated until
-    #   the series is long enough.
+    #   Total number of terms required to be in the series.  If the
+    #   value of this parameter is greater than the number of terms in
+    #   the {SERIES} array, new terms are calculated until the series
+    #   is long enough.
     #
     # @return [void]
     #
@@ -304,15 +305,21 @@ module Fibonaccia
     # @return [Integer]
     #   the number of terms in the series after the operation.
     #
-    # @raise [Fibonaccia::NotPositiveInteger]
-    #   if the argument isn't an integer greater than or equal to zero.
+    # @note
+    #   Passing a negative number to #grow is equivalent to to using #shrink.
+    #
+    # @see shrink
+    # @see terms=
+    #
+    # @raise [Fibonaccia::NotInteger]
+    #   if the argument isn't an Integer.
     #
     def grow(nterms)
-      unless (nterms.kind_of?(Integer) && (nterms >= 0))
-        msg		= 'argument must be a non-negative integer'
-        raise(Fibonaccia::NotPositiveInteger, msg)
+      unless (nterms.kind_of?(Integer))
+        msg		= 'argument must be an integer'
+        raise(Fibonaccia::NotInteger, msg)
       end
-      self.extend_series(self.terms + nterms)
+      self.terms	= [ MIN_TERMS, self.terms + nterms ].max
       return self.terms
     end                         # def grow
 
@@ -330,16 +337,21 @@ module Fibonaccia
     # @return [Integer]
     #   the number of terms in the series after the operation.
     #
-    # @raise [Fibonaccia::NotPositiveInteger]
-    #   if the argument isn't an integer greater than or equal to zero.
+    # @note
+    #   Passing a negative number to #shrink is equivalent to to using #grow.
+    #
+    # @see grow
+    # @see terms=
+    #
+    # @raise [Fibonaccia::NotInteger]
+    #   if the argument isn't an Integer value.
     #
     def shrink(nterms)
-      unless (nterms.kind_of?(Integer) && (nterms >= 0))
-        msg		= 'argument must be a non-negative integer'
-        raise(Fibonaccia::NotPositiveInteger, msg)
+      unless (nterms.kind_of?(Integer))
+        msg		= 'argument must be an integer'
+        raise(Fibonaccia::NotInteger, msg)
       end
-      nterms		= [ MIN_TERMS, self.terms - nterms ].max
-      SERIES.replace(SERIES.take(nterms))
+      self.terms	= [ MIN_TERMS, self.terms - nterms ].max
       return self.terms
     end                         # def shrink
 
@@ -377,9 +389,9 @@ module Fibonaccia
       end
       nterms		= [ MIN_TERMS, nterms ].max
       if (nterms > self.terms)
-        self.grow(nterms - self.terms)
+        self.extend_series(nterms)
       elsif (nterms < self.terms)
-        self.shrink(self.terms - nterms)
+        SERIES.replace(SERIES.take(nterms))
       end
       return self.terms
     end                         # def terms=

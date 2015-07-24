@@ -75,6 +75,18 @@ module Fibonaccia
 
   end                           # class Exception
 
+  #
+  # Exception raised when trying to perform an operation that requires
+  # an integer.
+  #
+  class NotInteger < ::Fibonaccia::Exception
+
+  end                           # class NotInteger
+
+  #
+  # Exception raised when trying to perform an operation that requires
+  # non-negative integer.
+  #
   class NotPositiveInteger < ::Fibonaccia::Exception
 
   end                           # class NotPositiveInteger

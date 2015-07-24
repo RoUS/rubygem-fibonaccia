@@ -16,3 +16,15 @@ Feature: Test that slicing past the current end of the series will extend it
       |    10 | 2      | [55,89]                                       | 12    |
       |   100 | 2      | [354224848179261915075,573147844013817084101] | 102   |
 
+  Scenario: Test that growing by a negative number of terms shrinks
+    Given the internal series has been reset
+    And I set attribute 'terms' to 100
+    When I invoke method 'grow(-10)'
+    Then the value of attribute 'terms' should be exactly 90
+
+  Scenario: Test that shrinking by a negative number of terms growa
+    Given the internal series has been reset
+    And I set attribute 'terms' to 100
+    When I invoke method 'shrink(-10)'
+    Then the value of attribute 'terms' should be exactly 110
+

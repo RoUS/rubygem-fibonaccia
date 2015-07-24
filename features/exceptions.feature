@@ -8,8 +8,21 @@ Feature: Test that all the things that *should* raise exceptions -- do.
       is not intended for use as a mix-in
       """
 
-  Scenario Outline: Test that #shrink, #grow, and #limit raise an exception on bad arguments
+  Scenario Outline: Test that #shrink and #grow raise an exception on bad arguments
     When I invoke method '<testmethod>("foo")'
+    Then it should raise an exception of type StandardError
+    And it should raise an exception of type Fibonaccia::Exception
+    And it should raise an exception of type Fibonaccia::NotInteger
+    And it should raise an exception with exc.to_s containing 'an integer'
+    And it should raise an exception with exc.to_str containing 'an integer'
+
+    Examples:
+      | testmethod |
+      | shrink     |
+      | grow       |
+
+  Scenario Outline: Test that #terms= raises an exception on bad arguments
+    When I set attribute 'terms' to <testval>
     Then it should raise an exception of type StandardError
     And it should raise an exception of type Fibonaccia::Exception
     And it should raise an exception of type Fibonaccia::NotPositiveInteger
@@ -17,10 +30,10 @@ Feature: Test that all the things that *should* raise exceptions -- do.
     And it should raise an exception with exc.to_str containing 'non-negative integer'
 
     Examples:
-      | testmethod |
-      | shrink     |
-      | grow       |
-      | terms=     |
+      | testval  |
+      | "foo"    |
+      | Math::PI |
+      | -27      |
 
   Scenario: Test that non-integer slice parameters raise exceptions
     When I invoke method slice("foo")

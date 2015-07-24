@@ -56,6 +56,12 @@ module Fibonaccia
   @version		= @version.bump(:tiny)
   @version		= @version.bump(:tiny)
 
+  #
+  # Making {#shrink} and {#grow} symmetrical and accept negative
+  # numbers.
+  #
+  @version		= @version.bump(:minor).change(:release_type => :development)
+
   @version.freeze
 
   #

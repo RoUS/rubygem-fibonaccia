@@ -8,6 +8,8 @@
 `Fibonaccia` is a very simple package for accessing the series of
 [Fibonacci numbers](https://en.wikipedia.org/wiki/Fibonacci_number).
 
+*(More details can be found in the [Details](Details) page.)*
+
 `Fibonaccia` also provides the irrational constant `PHI` (`φ`), which
 represents the [Golden Ratio](https://en.wikipedia.org/wiki/Golden_ratio)
 bu which isn't in Ruby's own *Math* module.
