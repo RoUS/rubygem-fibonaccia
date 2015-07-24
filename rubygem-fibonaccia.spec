@@ -6,7 +6,7 @@
 
 Name:		rubygem-%{gem_name}
 Version:	%{gem_version}
-Release:	1%{?dist}
+Release:	2%{?dist}
 BuildArch:	noarch
 
 Summary:	Fibonacci series and golden relationships.
@@ -113,3 +113,6 @@ fi
 
 
 %changelog
+* Thu Jul 23 2015 Ken Coar <kcoar@redhat.com> 1.0.0-2
+- new package built with tito
+
