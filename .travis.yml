@@ -22,6 +22,12 @@ notifications:
   email:
     - RoUS@redhat.com
 
+#
+# Preparing, building, and testing.
+#
+apt:
+  update: true
+
 before_install:
   - gem install bundler
   - gem install versionomy
