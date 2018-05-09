@@ -34,11 +34,13 @@ end
 
 group(:test, :development) do
   gem('aruba')
+  gem('coveralls',
+      :require		=> false)
   gem('rake')
   gem('simplecov',
       :require		=> false)
   gem('rdiscount')
   gem('redcarpet',	'< 3.0.0')
   gem('rdoc')
-  gem('yard',		'~> 0.8.6')
+  gem('yard',		'~> 0.9.11')
 end

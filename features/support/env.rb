@@ -23,6 +23,8 @@ end
 
 require('fibonaccia')
 require('aruba/cucumber')
+require('coveralls')
+Coveralls.wear!
 
 #
 # Pick the right debugging gem.
